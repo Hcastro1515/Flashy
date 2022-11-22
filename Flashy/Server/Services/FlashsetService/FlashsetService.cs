@@ -1,37 +1,111 @@
-﻿using Flashy.Shared.Entities;
+﻿using Flashy.Server.Data;
+using Flashy.Shared.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Flashy.Server.Services.FlashsetService
 {
     public class FlashsetService : IFlashsetService
     {
-        public Task<List<Flashset>> CreateFlashset(Flashset set)
+        private readonly DataContext _context;
+
+        public FlashsetService(DataContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<bool> DeleteAllFlashSets()
+        public async Task<List<Flashset>?> CreateFlashset(Flashset set)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (set != null)
+                {
+                    await _context.Flashsets.AddAsync(set);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                throw;
+            }
+            
+            return await GetFlashSets();
         }
 
-        public Task<bool> DeleteFlashsetById(int id)
+        public async Task<bool> DeleteAllFlashSets()
         {
-            throw new NotImplementedException();
+            bool isRemoved = false; 
+            List<Flashset>? sets = await GetFlashSets(); 
+            try
+            {
+                if (sets != null)
+                {
+                    _context.Flashsets.RemoveRange(sets);
+                    await _context.SaveChangesAsync(); 
+                    isRemoved = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message); 
+                throw;
+            }
+           
+            return isRemoved;   
         }
 
-        public Task<List<Flashset>> EditFlashSetById(int id)
+        public async Task<bool> DeleteFlashsetById(int id)
         {
-            throw new NotImplementedException();
+
+            bool isRemoved = false;
+            try
+            {
+                Flashset? set = await GetFlashsetById(id);
+
+                if (set != null)
+                {
+                    _context.Flashsets.Remove(set);
+                    await _context.SaveChangesAsync();
+                    isRemoved = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message); 
+                throw;
+            }
+
+            return isRemoved; 
         }
 
-        public Task<Flashset> GetFlashsetById(int id)
+        public async Task<List<Flashset>?> EditFlashSet(Flashset set)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var flashset = await GetFlashsetById(set.Id);
+                if (flashset != null)
+                {
+                    flashset.Term = set.Term;
+                    flashset.Definition = set.Definition;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message); 
+                throw;
+            }
+            return await GetFlashSets();
         }
 
-        public Task<List<Flashset>> GetFlashSets()
+        public async Task<Flashset?> GetFlashsetById(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Flashsets.FirstOrDefaultAsync(w => w.Id == id);
+        }
+
+        public async Task<List<Flashset>?> GetFlashSets()
+        {
+            return await _context.Flashsets.ToListAsync();
         }
     }
 }

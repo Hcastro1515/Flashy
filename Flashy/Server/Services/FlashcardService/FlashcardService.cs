@@ -1,37 +1,120 @@
-﻿using Flashy.Shared.Entities;
+﻿using Flashy.Server.Data;
+using Flashy.Shared.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Flashy.Server.Services.FlashcardService
 {
     public class FlashcardService : IFlashcardService
     {
-        public Task<List<Flashcard>> CreateFlashcard(Flashcard card)
+        private readonly DataContext context; 
+        public FlashcardService(DataContext context)
         {
-            throw new NotImplementedException();
+            this.context = context;
         }
 
-        public Task<List<Flashcard>> EditFlashcard(Flashcard card)
+        public async Task<List<Flashcard>?> CreateFlashcard(Flashcard card)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if(card != null)
+                {
+                    card.Sets = null; 
+                    await context.Flashcards.AddAsync(card);
+                    await context.SaveChangesAsync();
+                }else
+                {
+                    return new List<Flashcard>(); 
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message); 
+                throw;
+            }
+
+            return await GetFlashcards(); 
         }
 
-        public Task<Flashcard> GetFlashcardById(int id)
+        public async Task<List<Flashcard>?> EditFlashcard(Flashcard card)
         {
-            throw new NotImplementedException();
+            Flashcard? flashcard = await GetFlashcardById(card.FlashcardId); 
+            try
+            {
+                if (flashcard != null)
+                {
+
+                    flashcard.Title = card.Title;
+                    flashcard.Description = card.Description;
+                    await context.AddAsync(flashcard);
+                    await context.SaveChangesAsync();
+                } 
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message); 
+                throw;
+            }
+            return await GetFlashcards();
         }
 
-        public Task<List<Flashcard>> GetFlashcards()
+        public async Task<Flashcard?> GetFlashcardById(int id)
         {
-            throw new NotImplementedException();
+            return await context.Flashcards.FirstOrDefaultAsync(w => w.FlashcardId == id); 
         }
 
-        public Task<bool> RemoveAllFlashCards()
+        public async Task<List<Flashcard>?> GetFlashcards()
         {
-            throw new NotImplementedException();
+            return await context.Flashcards.ToListAsync();
         }
 
-        public Task<bool> RemoveFlashcardsById(int id)
+        public async Task<bool> RemoveAllFlashCards()
         {
-            throw new NotImplementedException();
+            var isRemoved = false;
+
+            try
+            {
+                List<Flashcard>? cards = await GetFlashcards(); 
+                if(cards != null)
+                {
+                    context.Flashcards.RemoveRange(cards);
+                    await context.SaveChangesAsync();
+                    isRemoved = true;
+                }else
+                {
+                    return isRemoved; 
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message); 
+            }
+            
+            return isRemoved;
+        }
+
+        public async Task<bool> RemoveFlashcardsById(int id)
+        {
+            var isRemoved = false;
+            try
+            {
+                var card = await GetFlashcardById(id); 
+                if(card != null)
+                {
+                    context.Flashcards.Remove(card); 
+                    await context.SaveChangesAsync();
+                    isRemoved = true; 
+                }else
+                {
+                    return isRemoved; 
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message); 
+            };
+
+            return isRemoved;
         }
     }
 }
