@@ -3,6 +3,7 @@ using Flashy.Server.Services.FlashcardService;
 using Flashy.Server.Services.FlashsetService;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddSwaggerGen(); 
+builder.Services.AddSwaggerGen( g => g.SwaggerDoc("v1", new OpenApiInfo { Title = "Flashcard API", Version = "v1" })); 
 builder.Services.AddDbContext<DataContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
@@ -23,7 +24,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(s => s.SwaggerEndpoint("/swagger/v1/swagger.json", "Flashy API")); 
+    app.UseSwaggerUI(s => s.SwaggerEndpoint("/swagger/v1/swagger.json", "v1")); 
     app.UseWebAssemblyDebugging();
 }
 else

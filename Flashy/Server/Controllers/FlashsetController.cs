@@ -19,25 +19,30 @@ namespace Flashy.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Flashset>>?> GetSets()
         {
-            return Ok(await _flashsetService.GetFlashSets()); 
+            var sets = await _flashsetService.GetFlashSets();
+
+            if (sets == null) return NotFound("Sorry there are no sets"); 
+
+            return Ok(sets); 
         }
 
         [HttpGet]
         public async Task<ActionResult<Flashset>> GetSetById(int id)
         {
-            return Ok(await _flashsetService.GetFlashsetById(id));
+            var set = await _flashsetService.GetFlashsetById(id);
+            if (set == null) return NotFound("Flashcard was not found");
+            return Ok(set);
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Flashset>>> CreateFlashSet(Flashset set)
+        public async Task<ActionResult<List<Flashset>>> CreateFlashSet([FromBody] Flashset set)
         {
-            var FLashsetInDb = _flashsetService.GetFlashsetById(set.Id);
 
-            if (FLashsetInDb != null) return BadRequest("Cannot create set, Set already exists");
+            if (set == null) return BadRequest("Error Flashset cannot be null"); 
             
-            await _flashsetService.CreateFlashset(set);
+            var flashset = await _flashsetService.CreateFlashset(set);
 
-            return Ok(await _flashsetService.GetFlashSets());
+            return Ok(flashset);
         }
 
         [HttpPut]

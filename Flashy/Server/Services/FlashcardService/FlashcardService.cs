@@ -69,7 +69,7 @@ namespace Flashy.Server.Services.FlashcardService
 
         public async Task<bool> RemoveAllFlashCards()
         {
-            var isRemoved = false;
+            bool isRemoved = false;
 
             try
             {

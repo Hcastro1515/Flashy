@@ -15,12 +15,17 @@ namespace Flashy.Server.Services.FlashsetService
 
         public async Task<List<Flashset>?> CreateFlashset(Flashset set)
         {
+            
             try
             {
                 if (set != null)
                 {
+                    set.Flashcard = null;
                     await _context.Flashsets.AddAsync(set);
                     await _context.SaveChangesAsync();
+                } else
+                {
+                    return new List<Flashset>();
                 }
             }
             catch (Exception ex)
@@ -35,15 +40,15 @@ namespace Flashy.Server.Services.FlashsetService
         public async Task<bool> DeleteAllFlashSets()
         {
             bool isRemoved = false; 
-            List<Flashset>? sets = await GetFlashSets(); 
             try
             {
+                List<Flashset>? sets = await GetFlashSets(); 
                 if (sets != null)
                 {
                     _context.Flashsets.RemoveRange(sets);
                     await _context.SaveChangesAsync(); 
                     isRemoved = true;
-                }
+                } else { return isRemoved; }
             }
             catch (Exception ex)
             {
@@ -57,10 +62,10 @@ namespace Flashy.Server.Services.FlashsetService
         public async Task<bool> DeleteFlashsetById(int id)
         {
 
-            bool isRemoved;
+            bool isRemoved = false;
             try
             {
-                Flashset? set = await GetFlashsetById(id);
+                var set = await GetFlashsetById(id);
 
                 if (set != null)
                 {
@@ -69,7 +74,7 @@ namespace Flashy.Server.Services.FlashsetService
                     isRemoved = true;
                 } else
                 {
-                    isRemoved = false; 
+                    return isRemoved; 
                 }
             }
             catch (Exception ex)
@@ -85,16 +90,12 @@ namespace Flashy.Server.Services.FlashsetService
         {
             try
             {
-                var flashset = await GetFlashsetById(set.Id);
+                Flashset? flashset = await GetFlashsetById(set.Id);
                 if (flashset != null)
                 {
                     flashset.Term = set.Term;
                     flashset.Definition = set.Definition;
                     await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    return new List<Flashset>(); 
                 }
             }
             catch (Exception ex)

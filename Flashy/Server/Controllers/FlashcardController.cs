@@ -31,18 +31,31 @@ namespace Flashy.Server.Controllers
 
             if(card == null) return NotFound("Flashcard was not found");
 
-            return Ok(await _flashcardService.GetFlashcardById(Id)); 
+            return Ok(card); 
         }
 
         [HttpPost]
         public async Task<ActionResult<List<Flashcard>>> CreateFlashcard([FromBody] Flashcard card)
         {
-            var flashcard = await _flashcardService.CreateFlashcard(card);
 
             if (card == null) return BadRequest("Error! Flashcard cannot be null!");
+            var flashcard = await _flashcardService.CreateFlashcard(card);
 
             return Ok(flashcard); 
             
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<List<Flashcard>>> UpdateSet(Flashcard card)
+        {
+            var updatedFlashcard = await _flashcardService.EditFlashcard(card);
+
+            if (updatedFlashcard?.Count < 0)
+            {
+                return NotFound("This set doesn't exist");
+            }
+
+            return Ok(updatedFlashcard);
         }
 
         [HttpDelete]
@@ -55,6 +68,7 @@ namespace Flashy.Server.Controllers
             return Ok("flashcard was removed successfully"); 
         }
 
+        [HttpDelete]
         public async Task<ActionResult<Boolean>> DeleteAllFlashcards()
         {
             var isRemoved = await _flashcardService.RemoveAllFlashCards();
