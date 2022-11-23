@@ -57,7 +57,7 @@ namespace Flashy.Server.Services.FlashsetService
         public async Task<bool> DeleteFlashsetById(int id)
         {
 
-            bool isRemoved = false;
+            bool isRemoved;
             try
             {
                 Flashset? set = await GetFlashsetById(id);
@@ -67,6 +67,9 @@ namespace Flashy.Server.Services.FlashsetService
                     _context.Flashsets.Remove(set);
                     await _context.SaveChangesAsync();
                     isRemoved = true;
+                } else
+                {
+                    isRemoved = false; 
                 }
             }
             catch (Exception ex)
@@ -88,6 +91,10 @@ namespace Flashy.Server.Services.FlashsetService
                     flashset.Term = set.Term;
                     flashset.Definition = set.Definition;
                     await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    return new List<Flashset>(); 
                 }
             }
             catch (Exception ex)

@@ -22,9 +22,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
     app.UseSwagger();
-    app.UseSwaggerUI(); 
+    app.UseSwaggerUI(s => s.SwaggerEndpoint("/swagger/v1/swagger.json", "Flashy API")); 
+    app.UseWebAssemblyDebugging();
 }
 else
 {
