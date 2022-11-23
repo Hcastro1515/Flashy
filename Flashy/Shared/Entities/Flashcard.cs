@@ -10,12 +10,13 @@ namespace Flashy.Shared.Entities
 {
     public class Flashcard
     {
-        public int FlashcardId { get; set; }
+        [Key]
+        public int Id { get; set; }
         [Required]
-        public string? Title { get; set; }
+        public string Title { get; set; } = string.Empty;
         [MaxLength(100)]
-        public string? Description { get; set; }
-        [JsonIgnore]
+        public string Description { get; set; } = string.Empty; 
+        
         public List<Flashset>? Sets { get; set; }
 
     }

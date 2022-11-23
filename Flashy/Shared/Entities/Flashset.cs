@@ -9,11 +9,10 @@ namespace Flashy.Shared.Entities
         [Key]
         public int Id { get; set; }
         [Required, MaxLength(255), MinLength(1)]
-        public string? Term { get; set; }
+        public string Term { get; set; } = string.Empty;
         [Required, MaxLength(255), MinLength(1)]
-        public string? Definition { get; set; }
+        public string Definition { get; set; } = string.Empty;
         [ForeignKey("FlashcardId")]
         public int FlashcardId { get; set; }
-        public Flashcard? Flashcard { get; set; }
     }
 }

@@ -15,12 +15,10 @@ namespace Flashy.Server.Services.FlashsetService
 
         public async Task<List<Flashset>?> CreateFlashset(Flashset set)
         {
-            Flashcard? card = await _context.Flashcards.FirstOrDefaultAsync(w => w.FlashcardId == set.FlashcardId);
             try
             {
                 if (set != null)
                 {
-                    set.Flashcard = card;
                     await _context.Flashsets.AddAsync(set);
                     await _context.SaveChangesAsync();
                 } else

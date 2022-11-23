@@ -21,15 +21,11 @@ namespace Flashy.Server.Services.FlashcardService
                     card.Sets = null; 
                     await context.Flashcards.AddAsync(card);
                     await context.SaveChangesAsync();
-                }else
-                {
-                    return new List<Flashcard>(); 
                 }
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex.Message); 
-                throw;
             }
 
             return await GetFlashcards(); 
@@ -37,28 +33,30 @@ namespace Flashy.Server.Services.FlashcardService
 
         public async Task<List<Flashcard>?> EditFlashcard(Flashcard card)
         {
-            Flashcard? flashcard = await GetFlashcardById(card.FlashcardId); 
+            Flashcard? flashcard = await context.Flashcards.FirstOrDefaultAsync(f => f.Id == card.Id); 
             try
             {
                 if (flashcard != null)
                 {
                     flashcard.Title = card.Title;
                     flashcard.Description = card.Description;
-                    await context.AddAsync(flashcard);
                     await context.SaveChangesAsync();
                 } 
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex.Message); 
-                throw;
             }
             return await GetFlashcards();
         }
 
         public async Task<Flashcard?> GetFlashcardById(int id)
         {
-            return await context.Flashcards.Include(w => w.Sets).FirstOrDefaultAsync(w => w.FlashcardId == id); 
+            Flashcard? flashcard = await context.Flashcards.FirstOrDefaultAsync(f => f.Id == id); 
+
+            if(flashcard == null) return null;
+
+            return flashcard; 
         }
 
         public async Task<List<Flashcard>?> GetFlashcards()
