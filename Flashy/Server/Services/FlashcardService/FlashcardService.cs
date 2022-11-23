@@ -42,7 +42,6 @@ namespace Flashy.Server.Services.FlashcardService
             {
                 if (flashcard != null)
                 {
-
                     flashcard.Title = card.Title;
                     flashcard.Description = card.Description;
                     await context.AddAsync(flashcard);
@@ -59,12 +58,12 @@ namespace Flashy.Server.Services.FlashcardService
 
         public async Task<Flashcard?> GetFlashcardById(int id)
         {
-            return await context.Flashcards.FirstOrDefaultAsync(w => w.FlashcardId == id); 
+            return await context.Flashcards.Include(w => w.Sets).FirstOrDefaultAsync(w => w.FlashcardId == id); 
         }
 
         public async Task<List<Flashcard>?> GetFlashcards()
         {
-            return await context.Flashcards.ToListAsync();
+            return await context.Flashcards.Include(s => s.Sets).ToListAsync();
         }
 
         public async Task<bool> RemoveAllFlashCards()

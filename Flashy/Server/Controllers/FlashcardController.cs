@@ -16,7 +16,8 @@ namespace Flashy.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Flashcard>>> GetFlashcards() {
+        public async Task<ActionResult<List<Flashcard>>> GetFlashcards() 
+        {
             var cards = await _flashcardService.GetFlashcards(); 
 
             if(cards == null) return NotFound("Sorry there are not flashcards");

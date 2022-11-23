@@ -15,12 +15,12 @@ namespace Flashy.Server.Services.FlashsetService
 
         public async Task<List<Flashset>?> CreateFlashset(Flashset set)
         {
-            
+            Flashcard? card = await _context.Flashcards.FirstOrDefaultAsync(w => w.FlashcardId == set.FlashcardId);
             try
             {
                 if (set != null)
                 {
-                    set.Flashcard = null;
+                    set.Flashcard = card;
                     await _context.Flashsets.AddAsync(set);
                     await _context.SaveChangesAsync();
                 } else
@@ -37,12 +37,12 @@ namespace Flashy.Server.Services.FlashsetService
             return await GetFlashSets();
         }
 
-        public async Task<bool> DeleteAllFlashSets()
+        public async Task<bool> DeleteAllFlashSets(int flashcardId)
         {
             bool isRemoved = false; 
             try
             {
-                List<Flashset>? sets = await GetFlashSets(); 
+                List<Flashset>? sets = await _context.Flashsets.Where(w => w.FlashcardId == flashcardId).ToListAsync(); 
                 if (sets != null)
                 {
                     _context.Flashsets.RemoveRange(sets);

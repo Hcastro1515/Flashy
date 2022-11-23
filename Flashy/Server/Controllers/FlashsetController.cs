@@ -69,9 +69,9 @@ namespace Flashy.Server.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult<Boolean>> DeleteAllSets()
+        public async Task<ActionResult<Boolean>> DeleteAllSets(int flashcardId)
         {
-            bool isRemoved = await _flashsetService.DeleteAllFlashSets();
+            bool isRemoved = await _flashsetService.DeleteAllFlashSets(flashcardId);
 
             if (!isRemoved) return BadRequest("Unable to remove sets");
 

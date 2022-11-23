@@ -10,6 +10,6 @@ namespace Flashy.Server.Services.FlashsetService
         Task<List<Flashset>?> CreateFlashset(Flashset set);
         Task<List<Flashset>?> EditFlashSet(Flashset set);
         Task<Boolean> DeleteFlashsetById(int id); 
-        Task<Boolean> DeleteAllFlashSets(); 
+        Task<Boolean> DeleteAllFlashSets(int flashcardId); 
     }
 }
