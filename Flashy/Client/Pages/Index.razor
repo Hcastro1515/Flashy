@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject IFlashcardService flashcardService 
 
 <PageTitle>Index</PageTitle>
 
@@ -6,4 +7,28 @@
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@foreach(var card in flashcardService.Flashcards)
+{
+    <ul>
+        <li>@card.Title</li>
+        <li>@card.Description</li>
+        @if(card.Sets != null)
+        {
+            @foreach (var sets in card.Sets)
+            {
+                <li>@sets.Term | @sets.Definition</li>
+            }
+        }else
+        {
+            <li>You currently have not sets </li>
+        }
+    </ul>
+}
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await flashcardService.GetFlashcards(); 
+    }
+}
